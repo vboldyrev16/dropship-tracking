@@ -1,0 +1,17 @@
+export const CHINA_DENYLIST = [
+  /\bCN\b/gi,
+  /\bChina\b/gi,
+  /\bPRC\b/gi,
+  /\bShenzhen\b/gi,
+  /\bGuangzhou\b/gi,
+  /\bYiwu\b/gi,
+  /\bFoshan\b/gi,
+  /\bZhengzhou\b/gi,
+  /\bHangzhou\b/gi,
+  /\bShanghai\b/gi,
+  /\bBeijing\b/gi,
+  /\bDongguan\b/gi,
+  /\bFujian\b/gi,
+  /\bZhejiang\b/gi,
+  /\bGuangdong\b/gi,
+];

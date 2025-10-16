@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npx prisma generate && npm run build",
+  "framework": "remix",
+  "installCommand": "npm install",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "DIRECT_URL": "@direct_url"
+  }
+}

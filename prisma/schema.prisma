@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Shop {
+  id            String   @id @default(cuid())
+  shopDomain    String   @unique
+  accessToken   String
+  installedAt   DateTime @default(now())
+
+  orders        Order[]
+  trackings     Tracking[]
+
+  @@map("shops")
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  shopId          String
+  shopifyOrderId  String
+  orderName       String
+
+  shop            Shop       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  trackings       Tracking[]
+
+  @@unique([shopId, shopifyOrderId])
+  @@index([shopId])
+  @@map("orders")
+}
+
+model Tracking {
+  id                  String   @id @default(cuid())
+  shopId              String
+  orderId             String?
+  trackingNumber      String
+  carrierSlug         String?
+  status              String   @default("ordered")
+  lastMileSlug        String?
+  lastMileTracking    String?
+  lastMileUrl         String?
+  registeredWith17Track Boolean @default(false)
+  lastPolledAt        DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  shop              Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  order             Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  rawEvents         EventRaw[]
+  redactedEvents    EventRedacted[]
+
+  @@unique([shopId, trackingNumber])
+  @@index([trackingNumber])
+  @@index([shopId, status])
+  @@map("trackings")
+}
+
+model EventRaw {
+  id          String   @id @default(cuid())
+  trackingId  String
+  provider    String
+  payloadJson String
+  occurredAt  DateTime
+  createdAt   DateTime @default(now())
+
+  tracking    Tracking @relation(fields: [trackingId], references: [id], onDelete: Cascade)
+
+  @@index([trackingId, occurredAt])
+  @@map("events_raw")
+}
+
+model EventRedacted {
+  id              String   @id @default(cuid())
+  trackingId      String
+  statusCode      String?
+  messageRedacted String
+  cityRedacted    String?
+  countryRedacted String?
+  occurredAt      DateTime
+  createdAt       DateTime @default(now())
+
+  tracking        Tracking @relation(fields: [trackingId], references: [id], onDelete: Cascade)
+
+  @@index([trackingId, occurredAt])
+  @@map("events_redacted")
+}
