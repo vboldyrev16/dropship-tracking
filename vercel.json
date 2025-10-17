@@ -1,3 +1,8 @@
 {
-  "buildCommand": "npx prisma generate && npm run build"
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/remix"
+    }
+  ]
 }

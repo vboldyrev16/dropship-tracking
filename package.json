@@ -10,7 +10,8 @@
     "start": "remix-serve ./build/server/index.js",
     "worker": "tsx app/workers/worker.ts",
     "test": "vitest",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
