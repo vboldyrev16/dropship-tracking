@@ -4,12 +4,12 @@ import { verifyAppProxySignature, extractShopDomain } from '~/lib/security/app-p
 import { db } from '~/lib/utils/db';
 import { getOrder } from '~/lib/shopify/client';
 import { logger } from '~/lib/utils/logger';
-import { TrackingHeader } from '~/components/tracking/TrackingHeader';
-import { OrderSummary } from '~/components/tracking/OrderSummary';
-import { LastMileCard } from '~/components/tracking/LastMileCard';
-import { ProductList } from '~/components/tracking/ProductList';
-import { EventTimeline } from '~/components/tracking/EventTimeline';
-import { EmptyState } from '~/components/ui/EmptyState';
+import { TrackingHeader } from '~/components/tracking/TrackingHeader.tsx';
+import { OrderSummary } from '~/components/tracking/OrderSummary.tsx';
+import { LastMileCard } from '~/components/tracking/LastMileCard.tsx';
+import { ProductList } from '~/components/tracking/ProductList.tsx';
+import { EventTimeline } from '~/components/tracking/EventTimeline.tsx';
+import { EmptyState } from '~/components/ui/EmptyState.tsx';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
