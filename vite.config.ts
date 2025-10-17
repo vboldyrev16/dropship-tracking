@@ -16,9 +16,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": resolve(__dirname, "./app"),
+      ".prisma/client/index-browser": "./node_modules/.prisma/client/index-browser.js"
     },
   },
   ssr: {
-    noExternal: ["@prisma/client", "prisma"],
+    // Don't bundle Prisma for SSR - it needs to be external
+    external: ["@prisma/client", ".prisma/client"],
   },
 });
