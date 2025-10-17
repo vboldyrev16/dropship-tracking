@@ -1,23 +1,26 @@
 -- CreateTable
 CREATE TABLE "shops" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "shopDomain" TEXT NOT NULL,
     "accessToken" TEXT NOT NULL,
-    "installedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "installedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "shops_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "orders" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "shopId" TEXT NOT NULL,
     "shopifyOrderId" TEXT NOT NULL,
     "orderName" TEXT NOT NULL,
-    CONSTRAINT "orders_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shops" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+
+    CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "trackings" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "shopId" TEXT NOT NULL,
     "orderId" TEXT,
     "trackingNumber" TEXT NOT NULL,
@@ -27,35 +30,37 @@ CREATE TABLE "trackings" (
     "lastMileTracking" TEXT,
     "lastMileUrl" TEXT,
     "registeredWith17Track" BOOLEAN NOT NULL DEFAULT false,
-    "lastPolledAt" DATETIME,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "trackings_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shops" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "trackings_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "lastPolledAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "trackings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "events_raw" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "trackingId" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
     "payloadJson" TEXT NOT NULL,
-    "occurredAt" DATETIME NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "events_raw_trackingId_fkey" FOREIGN KEY ("trackingId") REFERENCES "trackings" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "occurredAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "events_raw_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "events_redacted" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "trackingId" TEXT NOT NULL,
     "statusCode" TEXT,
     "messageRedacted" TEXT NOT NULL,
     "cityRedacted" TEXT,
     "countryRedacted" TEXT,
-    "occurredAt" DATETIME NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "events_redacted_trackingId_fkey" FOREIGN KEY ("trackingId") REFERENCES "trackings" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "occurredAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "events_redacted_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -81,3 +86,18 @@ CREATE INDEX "events_raw_trackingId_occurredAt_idx" ON "events_raw"("trackingId"
 
 -- CreateIndex
 CREATE INDEX "events_redacted_trackingId_occurredAt_idx" ON "events_redacted"("trackingId", "occurredAt");
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "orders_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shops"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "trackings" ADD CONSTRAINT "trackings_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shops"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "trackings" ADD CONSTRAINT "trackings_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "events_raw" ADD CONSTRAINT "events_raw_trackingId_fkey" FOREIGN KEY ("trackingId") REFERENCES "trackings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "events_redacted" ADD CONSTRAINT "events_redacted_trackingId_fkey" FOREIGN KEY ("trackingId") REFERENCES "trackings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
