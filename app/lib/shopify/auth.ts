@@ -4,10 +4,11 @@ import { encrypt } from '../security/encryption';
 
 export function buildAuthUrl(shop: string): string {
   const params = new URLSearchParams({
-    client_id: env.SHOPIFY_API_KEY,
+    client_id: env.SHOPIFY_API_KEY!,
     scope: env.SHOPIFY_SCOPES,
     redirect_uri: `${env.APP_URL}/auth/callback`,
     state: generateNonce(),
+    grant_options: '[]', // Required for online access mode
   });
 
   return `https://${shop}/admin/oauth/authorize?${params}`;
@@ -32,7 +33,8 @@ export async function exchangeCodeForToken(
   });
 
   if (!response.ok) {
-    throw new Error(`Token exchange failed: ${response.statusText}`);
+    const errorText = await response.text();
+    throw new Error(`Token exchange failed: ${response.status} ${errorText}`);
   }
 
   const data = await response.json();
