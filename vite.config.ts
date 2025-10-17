@@ -5,6 +5,10 @@ export default defineConfig({
   plugins: [
     remix({
       ignoredRouteFiles: ["**/.*"],
+      serverModuleFormat: "esm",
     }),
   ],
+  ssr: {
+    noExternal: ["@prisma/client", "prisma"],
+  },
 });
